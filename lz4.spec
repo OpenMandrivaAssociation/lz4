@@ -4,13 +4,14 @@
 
 Name:		lz4
 Version:	r123
-Release:	1
+Release:	2
 Summary:	Extremely fast compression algorithm
 
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
 URL:		https://code.google.com/p/lz4/
 Source0:	https://github.com/Cyan4973/lz4/archive/%{version}/%{name}-%{version}.tar.gz
+Requires:	%{libname} = %{EVRD}
 
 %description
 LZ4 is an extremely fast loss-less compression algorithm, providing compression
@@ -30,6 +31,8 @@ LZ4 library.
 Summary:	Development library for lz4
 Group:		Development/C
 License:	BSD
+Requires:	%{libname} = %{EVRD}
+Provides:	%{name}-devel = %{EVRD}
 
 %description -n	%{devname}
 This package contains the header(.h) and library(.so) files required to build
