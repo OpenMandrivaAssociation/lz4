@@ -1,6 +1,6 @@
-%define	major	1
-%define	libname	%mklibname lz4 %{major}
-%define	devname	%mklibname -d lz4
+%define	major 1
+%define	libname %mklibname lz4 %{major}
+%define	devname %mklibname -d lz4
 
 Name:		lz4
 Version:	r123
@@ -10,7 +10,7 @@ Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
 URL:		https://code.google.com/p/lz4/
-Source0:        https://github.com/Cyan4973/lz4/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:	https://github.com/Cyan4973/lz4/archive/%{version}/%{name}-%{version}.tar.gz
 
 %description
 LZ4 is an extremely fast loss-less compression algorithm, providing compression
@@ -63,7 +63,3 @@ rm %{buildroot}%{_libdir}/liblz4.a
 %{_includedir}/*.h
 %{_libdir}/liblz4.so
 %{_libdir}/pkgconfig/liblz4.pc
-
-%changelog
-* Wed Oct 22 2014 Per Øyvind Karlsen <proyvind@moondrake.org> r123-1
-- initial release
