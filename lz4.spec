@@ -45,6 +45,9 @@ liblz4 library.
 %setup -q -n %{name}-%{commit}
 echo '#!/bin/sh' > ./configure
 chmod +x ./configure
+%ifarch %arm
+for i in $(grep -rl "\-m32");do sed -i 's!-m32!!g' $i;done
+%endif
 
 %build
 %define	__cc gcc
