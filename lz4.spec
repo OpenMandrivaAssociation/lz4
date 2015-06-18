@@ -3,7 +3,7 @@
 
 Name:		lz4
 Version:	r129
-Release:	1
+Release:	2
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
