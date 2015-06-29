@@ -44,9 +44,8 @@ liblz4 library.
 %setup -q
 echo '#!/bin/sh' > ./configure
 chmod +x ./configure
-%ifarch %armx
+
 for i in $(grep -rl "\-m32");do sed -i 's!-m32!!g' $i;done
-%endif
 
 %build
 %global optflags %{optflags} -Ofast -flto
