@@ -1,14 +1,13 @@
 %define	major	1
-%global commit 7d182b816ace89d6d6d16b7aee376a9962a05caa
 
 Name:		lz4
-Version:	r129
-Release:	2
+Version:	r130
+Release:	1
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
 URL:		https://code.google.com/p/lz4/
-Source0:	https://github.com/Cyan4973/%{name}/archive/%{commit}/%{name}-%{commit}.tar.gz
+Source0:	https://github.com/Cyan4973/%{name}/archive/%{name}-%{version}.tar.gz
 
 %description
 LZ4 is an extremely fast loss-less compression algorithm, providing compression
@@ -42,15 +41,14 @@ This package contains the static library files to statically link against the
 liblz4 library.
 
 %prep
-%setup -q -n %{name}-%{commit}
+%setup -q
 echo '#!/bin/sh' > ./configure
 chmod +x ./configure
-%ifarch %arm
+%ifarch %armx
 for i in $(grep -rl "\-m32");do sed -i 's!-m32!!g' $i;done
 %endif
 
 %build
-%define	__cc gcc
 %global optflags %{optflags} -Ofast -flto
 %global ldflags %{ldflags} -flto
 %setup_compile_flags
