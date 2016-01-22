@@ -1,8 +1,8 @@
 %define	major	1
 
 Name:		lz4
-Version:	r130
-Release:	3
+Version:	r131
+Release:	1
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
