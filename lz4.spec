@@ -1,13 +1,13 @@
 %define	major	1
 
 Name:		lz4
-Version:	r131
+Version:	1.7.3
 Release:	1
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
 URL:		https://code.google.com/p/lz4/
-Source0:	https://github.com/Cyan4973/%{name}/archive/%{name}-%{version}.tar.gz
+Source0:	https://github.com/lz4/lz4/archive/v%{version}.tar.gz
 
 %description
 LZ4 is an extremely fast loss-less compression algorithm, providing compression
@@ -51,10 +51,10 @@ for i in $(grep -rl "\-m32");do sed -i 's!-m32!!g' $i;done
 %global optflags %{optflags} -Ofast
 %global ldflags %{ldflags}
 %setup_compile_flags
-%make all lz4programs VERBOSE=1
+%make CC=%{__cc} programs all VERBOSE=1
 
 %install
-%makeinstall_std PREFIX=%{_prefix} LIBDIR=%{_libdir}
+%makeinstall_std PREFIX=%{_prefix} LIBDIR=%{_libdir} CC=%{__cc} LDFLAGS="%{ldflags}"
 
 %files
 %doc NEWS
