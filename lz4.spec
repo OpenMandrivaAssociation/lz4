@@ -1,13 +1,13 @@
 %define	major	1
 
 Name:		lz4
-Version:	1.7.5
+Version:	1.8.0
 Release:	1
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
 URL:		https://code.google.com/p/lz4/
-Source0:	https://github.com/lz4/lz4/archive/v%{version}.tar.gz
+Source0:	https://github.com/lz4/lz4/archive/%{name}-%{version}.tar.gz
 
 %description
 LZ4 is an extremely fast loss-less compression algorithm, providing compression
