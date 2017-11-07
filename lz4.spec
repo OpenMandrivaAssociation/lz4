@@ -54,7 +54,7 @@ for i in $(grep -rl "\-m32");do sed -i 's!-m32!!g' $i;done
 %make CC=%{__cc} programs all VERBOSE=1
 
 %install
-%makeinstall_std PREFIX=%{_prefix} LIBDIR=%{_libdir} CC=%{__cc} LDFLAGS="%{ldflags}"
+%makeinstall_std PREFIX=%{_prefix} LIBDIR=%{_libdir} CC=%{__cc} LDFLAGS="%{ldflags}" mandir="%{_mandir}/man1"
 
 %files
 %doc NEWS
