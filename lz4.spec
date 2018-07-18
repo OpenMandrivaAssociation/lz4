@@ -1,4 +1,4 @@
-%define	major	1
+%define major 1
 
 Name:		lz4
 Version:	1.8.2
@@ -8,6 +8,7 @@ Group:		Archiving/Compression
 License:	GPLv2+ and BSD
 URL:		http://www.lz4.org/
 Source0:	https://github.com/lz4/lz4/archive/v%{version}.tar.gz
+BuildRequires:	glibc-devel
 
 %description
 LZ4 is an extremely fast loss-less compression algorithm, providing compression
@@ -16,27 +17,27 @@ an extremely fast decoder, with speed in multiple GB/s per core, typically
 reaching RAM speed limits on multi-core systems.
 
 
-%define	devname	%{mklibname -d %{name}}
+%define devname %{mklibname -d %{name}}
 
-%package -n	%{devname}
+%package -n %{devname}
 Summary:	Development library for lz4
 Group:		Development/C
 License:	BSD
 Requires:	%{mklibname lz4 %{major}}
 
-%description -n	%{devname}
+%description -n %{devname}
 This package contains the header(.h) and library(.so) files required to build
 applications using liblz4 library.
 
-%define	static	%{mklibname -d -s %{name}}
+%define static %{mklibname -d -s %{name}}
 
-%package -n	%{static}
+%package -n %{static}
 Summary:	Static development library for lz4
 Group:		Development/C
 License:	BSD
 Requires:	%{mklibname -d lz4}
 
-%description -n	%{static}
+%description -n %{static}
 This package contains the static library files to statically link against the
 liblz4 library.
 
