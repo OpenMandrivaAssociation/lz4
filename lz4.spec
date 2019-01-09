@@ -2,7 +2,7 @@
 
 Name:		lz4
 Version:	1.8.3
-Release:	2
+Release:	3
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
@@ -49,7 +49,7 @@ chmod +x ./configure
 for i in $(grep -rl "\-m32");do sed -i 's!-m32!!g' $i;done
 
 %build
-%global optflags %{optflags} -Ofast
+%global optflags %{optflags} -O3
 %global ldflags %{ldflags}
 %setup_compile_flags
 %make_build CC=%{__cc} programs all VERBOSE=1
