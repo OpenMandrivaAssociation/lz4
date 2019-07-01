@@ -1,8 +1,14 @@
 %define major 1
 
+%global optflags %{optflags} -O3
+%global ldflags %{ldflags}
+
+# (tpg) enable PGO build
+%bcond_without pgo
+
 Name:		lz4
 Version:	1.9.1
-Release:	1
+Release:	2
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
@@ -49,9 +55,25 @@ chmod +x ./configure
 for i in $(grep -rl "\-m32");do sed -i 's!-m32!!g' $i;done
 
 %build
-%global optflags %{optflags} -O3
-%global ldflags %{ldflags}
 %setup_compile_flags
+%if %{with pgo}
+export LLVM_PROFILE_FILE=%{name}-%p.profile.d
+export LD_LIBRARY_PATH="$(pwd)"
+CFLAGS="%{optflags} -fprofile-instr-generate" \
+CXXFLAGS="%{optflags} -fprofile-instr-generate" \
+FFLAGS="$CFLAGS_PGO" \
+FCFLAGS="$CFLAGS_PGO" \
+LDFLAGS="%{ldflags} -fprofile-instr-generate" \
+%make_build CC=%{__cc} programs all VERBOSE=1
+
+./tests/fullbench
+
+make clean
+
+CFLAGS="%{optflags} -fprofile-instr-use=$(realpath %{name}.profile)" \
+CXXFLAGS="%{optflags} -fprofile-instr-use=$(realpath %{name}.profile)" \
+LDFLAGS="%{ldflags} -fprofile-instr-use=$(realpath %{name}.profile)" \
+%endif
 %make_build CC=%{__cc} programs all VERBOSE=1
 
 %install
