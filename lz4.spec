@@ -66,7 +66,8 @@ FCFLAGS="$CFLAGS_PGO" \
 LDFLAGS="%{ldflags} -fprofile-instr-generate" \
 %make_build CC=%{__cc} programs all VERBOSE=1
 
-./tests/fullbench
+./tests/fullbench -c ./lib/lz4.c
+./tests/fullbench -d ./lib/lz4.c
 
 make clean
 
