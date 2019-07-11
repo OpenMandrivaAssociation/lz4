@@ -70,7 +70,7 @@ LDFLAGS="%{ldflags} -fprofile-instr-generate" \
 
 unset LD_LIBRARY_PATH
 unset LLVM_PROFILE_FILE
-if [ -s ./test/*.profile.d ] && printf '%s\n' 'profile is empty' && exit 1
+[ ! -s ./test/*.profile.d ] && printf '%s\n' 'profile is empty' && exit 1
 llvm-profdata merge --output=%{name}.profile ./test/*.profile.d
 make clean
 
