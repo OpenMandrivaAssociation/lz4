@@ -1,7 +1,6 @@
 %define major 1
 
 %global optflags %{optflags} -O3
-%global ldflags %{ldflags}
 
 # (tpg) enable PGO build
 %bcond_without pgo
@@ -61,14 +60,18 @@ export LLVM_PROFILE_FILE=%{name}-%p.profile.d
 export LD_LIBRARY_PATH="$(pwd)"
 CFLAGS="%{optflags} -fprofile-instr-generate" \
 CXXFLAGS="%{optflags} -fprofile-instr-generate" \
-FFLAGS="$CFLAGS_PGO" \
-FCFLAGS="$CFLAGS_PGO" \
+FFLAGS="$CFLAGS" \
+FCFLAGS="$CFLAGS" \
 LDFLAGS="%{ldflags} -fprofile-instr-generate" \
 %make_build CC=%{__cc} programs all VERBOSE=1
 
 ./tests/fullbench -c ./lib/lz4.c
 ./tests/fullbench -d ./lib/lz4.c
 
+unset LD_LIBRARY_PATH
+unset LLVM_PROFILE_FILE
+if [ -s ./test/*.profile.d ] && printf '%s\n' 'profile is empty' && exit 1
+llvm-profdata merge --output=%{name}.profile ./test/*.profile.d
 make clean
 
 CFLAGS="%{optflags} -fprofile-instr-use=$(realpath %{name}.profile)" \
