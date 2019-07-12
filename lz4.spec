@@ -70,8 +70,7 @@ LDFLAGS="%{ldflags} -fprofile-instr-generate" \
 
 unset LD_LIBRARY_PATH
 unset LLVM_PROFILE_FILE
-[ ! -s ./test/*.profile.d ] && printf '%s\n' 'profile is empty' && exit 1
-llvm-profdata merge --output=%{name}.profile ./test/*.profile.d
+llvm-profdata merge --output=%{name}.profile $(find . -type f -name "*.profile.d")
 make clean
 
 CFLAGS="%{optflags} -fprofile-instr-use=$(realpath %{name}.profile)" \
