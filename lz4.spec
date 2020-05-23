@@ -14,7 +14,7 @@
 
 Name:		lz4
 Version:	1.9.2
-Release:	2
+Release:	3
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
@@ -107,9 +107,9 @@ for i in $(grep -rl "\-m32");do sed -i 's!-m32!!g' $i;done
 mkdir build32
 cp -a $(ls -1 |grep -v build32) build32
 cd build32
-CFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g') -m32" \
-CXXFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g') -m32" \
-LDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g') -m32" \
+CFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g;s,-flto,,g') -m32" \
+CXXFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g;s,-flto,,g') -m32" \
+LDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g;s,-flto,,g') -m32" \
 %make_build CC="gcc -m32" CXX="g++ -m32" LD="gcc -m32" all VERBOSE=1
 cd ..
 %endif
