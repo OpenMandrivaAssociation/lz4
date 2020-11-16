@@ -13,8 +13,8 @@
 %bcond_without pgo
 
 Name:		lz4
-Version:	1.9.2
-Release:	3
+Version:	1.9.3
+Release:	1
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
