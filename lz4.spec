@@ -14,7 +14,7 @@
 
 Name:		lz4
 Version:	1.9.3
-Release:	1
+Release:	2
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
@@ -101,7 +101,7 @@ chmod +x ./configure
 for i in $(grep -rl "\-m32");do sed -i 's!-m32!!g' $i;done
 
 %build
-%setup_compile_flags
+%set_build_flags
 
 %if %{with compat32}
 mkdir build32
@@ -115,26 +115,25 @@ cd ..
 %endif
 
 %if %{with pgo}
-export LLVM_PROFILE_FILE=%{name}-%p.profile.d
 export LD_LIBRARY_PATH="$(pwd)"
-CFLAGS="%{optflags} -fprofile-instr-generate" \
-CXXFLAGS="%{optflags} -fprofile-instr-generate" \
-FFLAGS="$CFLAGS" \
-FCFLAGS="$CFLAGS" \
-LDFLAGS="%{ldflags} -fprofile-instr-generate" \
-%make_build CC=%{__cc} programs all VERBOSE=1
+
+CFLAGS="%{optflags} -fprofile-generate -mllvm -vp-counters-per-site=16" \
+CXXFLAGS="%{optflags} -fprofile-generate -mllvm -vp-counters-per-site=16" \
+LDFLAGS="%{build_ldflags} -fprofile-generate" \
+%make_build CC="%{__cc}" programs all VERBOSE=1
 
 ./tests/fullbench -c ./lib/lz4.c
 ./tests/fullbench -d ./lib/lz4.c
 
 unset LD_LIBRARY_PATH
-unset LLVM_PROFILE_FILE
-llvm-profdata merge --output=%{name}.profile $(find . -type f -name "*.profile.d")
+llvm-profdata merge --output=%{name}-llvm.profdata $(find . -name "*.profraw" -type f)
+PROFDATA="$(realpath %{name}-llvm.profdata)"
+rm -f *.profraw
 make clean
 
-CFLAGS="%{optflags} -fprofile-instr-use=$(realpath %{name}.profile)" \
-CXXFLAGS="%{optflags} -fprofile-instr-use=$(realpath %{name}.profile)" \
-LDFLAGS="%{ldflags} -fprofile-instr-use=$(realpath %{name}.profile)" \
+CFLAGS="%{optflags} -fprofile-use=$PROFDATA" \
+CXXFLAGS="%{optflags} -fprofile-use=$PROFDATA" \
+LDFLAGS="%{build_ldflags} -fprofile-use=$PROFDATA" \
 %endif
 %make_build CC=%{__cc} programs all VERBOSE=1
 
@@ -153,7 +152,7 @@ cd ..
 %{_bindir}/lz4c
 %{_bindir}/lz4cat
 %{_bindir}/unlz4
-%{_mandir}/man1/*lz4*.1*
+%doc %{_mandir}/man1/*lz4*.1*
 
 %{libpackage %{name} %{major}}
 
