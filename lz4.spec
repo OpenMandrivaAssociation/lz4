@@ -14,13 +14,13 @@
 
 Name:		lz4
 Version:	1.9.3
-Release:	2
+Release:	3
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
 URL:		http://www.lz4.org/
 Source0:	https://github.com/lz4/lz4/archive/v%{version}.tar.gz
-BuildRequires:	glibc-devel
+BuildRequires:	meson
 
 %description
 LZ4 is an extremely fast loss-less compression algorithm, providing compression
@@ -95,23 +95,19 @@ liblz4 library.
 
 %prep
 %autosetup -p1
-echo '#!/bin/sh' > ./configure
-chmod +x ./configure
-
-for i in $(grep -rl "\-m32");do sed -i 's!-m32!!g' $i;done
 
 %build
-%set_build_flags
+%global _vpath_srcdir contrib/meson
 
 %if %{with compat32}
-mkdir build32
-cp -a $(ls -1 |grep -v build32) build32
-cd build32
-CFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g;s,-flto,,g') -m32" \
-CXXFLAGS="$(echo %{optflags} |sed -e 's,-m64,,g;s,-flto,,g') -m32" \
-LDFLAGS="$(echo %{ldflags} |sed -e 's,-m64,,g;s,-flto,,g') -m32" \
-%make_build CC="gcc -m32" CXX="g++ -m32" LD="gcc -m32" all VERBOSE=1
-cd ..
+%meson32 \
+    -Dbin_programs=false \
+    -Dbin_tests=false \
+    -Dbin_contrib=false \
+    -Ddefault_library=both
+
+%meson_build -C build32
+
 %endif
 
 %if %{with pgo}
@@ -120,31 +116,42 @@ export LD_LIBRARY_PATH="$(pwd)"
 CFLAGS="%{optflags} -fprofile-generate -mllvm -vp-counters-per-site=16" \
 CXXFLAGS="%{optflags} -fprofile-generate -mllvm -vp-counters-per-site=16" \
 LDFLAGS="%{build_ldflags} -fprofile-generate" \
-%make_build CC="%{__cc}" programs all VERBOSE=1
+%meson \
+    -Dbin_programs=true \
+    -Dbin_tests=true \
+    -Dbin_contrib=true \
+    -Ddefault_library=both
 
-./tests/fullbench -c ./lib/lz4.c
-./tests/fullbench -d ./lib/lz4.c
+%meson_build
+
+./build/meson/tests/fullbench -c ./lib/lz4.c
+./build/meson/tests/fullbench -d ./lib/lz4.c
 
 unset LD_LIBRARY_PATH
 llvm-profdata merge --output=%{name}-llvm.profdata $(find . -name "*.profraw" -type f)
 PROFDATA="$(realpath %{name}-llvm.profdata)"
 rm -f *.profraw
-make clean
+rm -rf build/meson*
+rm -rf /build/*ninja*
 
 CFLAGS="%{optflags} -fprofile-use=$PROFDATA" \
 CXXFLAGS="%{optflags} -fprofile-use=$PROFDATA" \
 LDFLAGS="%{build_ldflags} -fprofile-use=$PROFDATA" \
 %endif
-%make_build CC=%{__cc} programs all VERBOSE=1
+%meson \
+    -Dbin_programs=true \
+    -Dbin_tests=true \
+    -Dbin_contrib=true \
+    -Ddefault_library=both
+
+%meson_build
 
 %install
 %if %{with compat32}
-cd build32
-%make_install PREFIX=%{_prefix} LIBDIR=%{_prefix}/lib CC="gcc -m32" LDFLAGS="%{ldflags} -m32" mandir="%{_mandir}"
+%meson_install -C build32
 rm -rf %{buildroot}%{_bindir}/* %{buildroot}%{_mandir}
-cd ..
 %endif
-%make_install PREFIX=%{_prefix} LIBDIR=%{_libdir} CC=%{__cc} LDFLAGS="%{ldflags}" mandir="%{_mandir}"
+%meson_install -C build
 
 %files
 %doc NEWS
