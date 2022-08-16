@@ -13,8 +13,8 @@
 %bcond_without pgo
 
 Name:		lz4
-Version:	1.9.3
-Release:	3
+Version:	1.9.4
+Release:	1
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
@@ -101,9 +101,9 @@ liblz4 library.
 
 %if %{with compat32}
 %meson32 \
-    -Dbin_programs=false \
-    -Dbin_tests=false \
-    -Dbin_contrib=false \
+    -Dprograms=false \
+    -Dtests=false \
+    -Dcontrib=false \
     -Ddefault_library=both
 
 %meson_build -C build32
@@ -117,9 +117,9 @@ CFLAGS="%{optflags} -fprofile-generate -mllvm -vp-counters-per-site=16" \
 CXXFLAGS="%{optflags} -fprofile-generate -mllvm -vp-counters-per-site=16" \
 LDFLAGS="%{build_ldflags} -fprofile-generate" \
 %meson \
-    -Dbin_programs=true \
-    -Dbin_tests=true \
-    -Dbin_contrib=true \
+    -Dprograms=true \
+    -Dtests=true \
+    -Dcontrib=true \
     -Ddefault_library=both
 
 %meson_build
@@ -139,9 +139,9 @@ CXXFLAGS="%{optflags} -fprofile-use=$PROFDATA" \
 LDFLAGS="%{build_ldflags} -fprofile-use=$PROFDATA" \
 %endif
 %meson \
-    -Dbin_programs=true \
-    -Dbin_tests=true \
-    -Dbin_contrib=true \
+    -Dprograms=true \
+    -Dtests=true \
+    -Dcontrib=true \
     -Ddefault_library=both
 
 %meson_build
