@@ -59,6 +59,7 @@ liblz4 library.
 %package -n %{lib32name}
 Summary:	LZ4 compression library (32-bit)
 Group:		System/Libraries
+BuildRequires:	libc6
 
 %description -n %{lib32name}
 LZ4 compression library (32-bit)
