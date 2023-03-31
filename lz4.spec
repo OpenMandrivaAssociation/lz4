@@ -14,7 +14,7 @@
 
 Name:		lz4
 Version:	1.9.4
-Release:	1
+Release:	2
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
