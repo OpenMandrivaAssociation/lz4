@@ -10,7 +10,11 @@
 %global optflags %{optflags} -O3
 
 # (tpg) enable PGO build
+%if %{cross_compiling}
+%bcond_with pgo
+%else
 %bcond_without pgo
+%endif
 
 Name:		lz4
 Version:	1.9.4
