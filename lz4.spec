@@ -18,7 +18,7 @@
 
 Name:		lz4
 Version:	1.9.4
-Release:	2
+Release:	3
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
@@ -39,7 +39,7 @@ reaching RAM speed limits on multi-core systems.
 Summary:	Development library for lz4
 Group:		Development/C
 License:	BSD
-Requires:	%{mklibname lz4 %{major}}
+Requires:	%{mklibname lz4}
 
 %description -n %{devname}
 This package contains the header(.h) and library(.so) files required to build
