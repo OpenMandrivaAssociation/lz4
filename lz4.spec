@@ -17,14 +17,16 @@
 %endif
 
 Name:		lz4
-Version:	1.9.4
-Release:	3
+Version:	1.10.0
+Release:	1
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
 URL:		http://www.lz4.org/
 Source0:	https://github.com/lz4/lz4/archive/v%{version}.tar.gz
-BuildRequires:	meson
+Patch0:		lz4-1.10.0-cmake-build-fullbench.patch
+BuildRequires:	cmake
+BuildRequires:	ninja
 
 %description
 LZ4 is an extremely fast loss-less compression algorithm, providing compression
@@ -83,6 +85,7 @@ Development files for the LZ4 compression library (32-bit)
 %files -n %{dev32name}
 %{_prefix}/lib/lib%{name}.so
 %{_prefix}/lib/pkgconfig/*.pc
+%{_prefix}/lib/cmake/lz4
 
 %package -n %{static32}
 Summary:	Static development library for lz4 (32-bit)
@@ -102,35 +105,30 @@ liblz4 library.
 %autosetup -p1
 
 %build
-%global _vpath_srcdir contrib/meson
+cd build/cmake
 
 %if %{with compat32}
-%meson32 \
-    -Dprograms=false \
-    -Dtests=false \
-    -Dcontrib=false \
-    -Ddefault_library=both
-
-%meson_build -C build32
-
+%cmake32 \
+	-DBUILD_STATIC_LIBS:BOOL=ON \
+	-G Ninja
+%ninja_build
+cd ..
 %endif
 
-%if %{with pgo}
-export LD_LIBRARY_PATH="$(pwd)"
-
+%if %{with pgo} && ! %{cross_compiling}
 CFLAGS="%{optflags} -fprofile-generate -mllvm -vp-counters-per-site=16" \
 CXXFLAGS="%{optflags} -fprofile-generate -mllvm -vp-counters-per-site=16" \
 LDFLAGS="%{build_ldflags} -fprofile-generate" \
-%meson \
-    -Dprograms=true \
-    -Dtests=true \
-    -Dcontrib=true \
-    -Ddefault_library=both
+%cmake \
+	-DBUILD_STATIC_LIBS:BOOL=ON \
+	-DBUILD_BENCHMARKS:BOOL=ON \
+	-G Ninja
 
-%meson_build
+%ninja_build
+export LD_LIBRARY_PATH="$(pwd)"
 
-./build/meson/tests/fullbench -c ./lib/lz4.c
-./build/meson/tests/fullbench -d ./lib/lz4.c
+./fullbench -c ../../../lib/lz4.c
+./fullbench -d ../../../lib/lz4.c
 
 unset LD_LIBRARY_PATH
 llvm-profdata merge --output=%{name}-llvm.profdata $(find . -name "*.profraw" -type f)
@@ -138,25 +136,25 @@ PROFDATA="$(realpath %{name}-llvm.profdata)"
 rm -f *.profraw
 rm -rf build/meson*
 rm -rf /build/*ninja*
+cd ..
 
 CFLAGS="%{optflags} -fprofile-use=$PROFDATA" \
 CXXFLAGS="%{optflags} -fprofile-use=$PROFDATA" \
 LDFLAGS="%{build_ldflags} -fprofile-use=$PROFDATA" \
 %endif
-%meson \
-    -Dprograms=true \
-    -Dtests=true \
-    -Dcontrib=true \
-    -Ddefault_library=both
+%cmake \
+	-DBUILD_STATIC_LIBS:BOOL=ON \
+	-G Ninja
 
-%meson_build
+%ninja_build
 
 %install
 %if %{with compat32}
-%meson_install -C build32
+%ninja_install -C build/cmake/build32
 rm -rf %{buildroot}%{_bindir}/* %{buildroot}%{_mandir}
 %endif
-%meson_install -C build
+%ninja_install -C build/cmake/build
+ln -s lz4 %{buildroot}%{_bindir}/lz4c
 
 %files
 %doc NEWS
@@ -173,6 +171,7 @@ rm -rf %{buildroot}%{_bindir}/* %{buildroot}%{_mandir}
 %{_includedir}/*.h
 %{_libdir}/liblz4.so
 %{_libdir}/pkgconfig/liblz4.pc
+%{_libdir}/cmake/lz4
 
 %files -n %{static}
 %{_libdir}/liblz4.a
