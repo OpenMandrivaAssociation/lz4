@@ -102,7 +102,7 @@ liblz4 library.
 %autosetup -p1
 
 %build
-%global _vpath_srcdir contrib/meson
+%global _vpath_srcdir build/meson
 
 %if %{with compat32}
 %meson32 \
