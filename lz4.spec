@@ -22,7 +22,7 @@ Release:	1
 Summary:	Extremely fast compression algorithm
 Group:		Archiving/Compression
 License:	GPLv2+ and BSD
-URL:		http://www.lz4.org/
+URL:		https://www.lz4.org/
 Source0:	https://github.com/lz4/lz4/archive/v%{version}.tar.gz
 Patch0:		lz4-1.10.0-cmake-build-fullbench.patch
 BuildRequires:	cmake
