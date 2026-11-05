@@ -1,0 +1,40 @@
+--- lz4-1.11.0/build/cmake/CMakeLists.txt.omv~	2026-11-05 19:26:38.326484871 +0100
++++ lz4-1.11.0/build/cmake/CMakeLists.txt	2026-11-05 19:26:38.342445296 +0100
+@@ -99,6 +99,7 @@ endif(NOT LZ4_BUNDLED_MODE AND NOT CPack
+ include(CMakeDependentOption)
+ CMAKE_DEPENDENT_OPTION(BUILD_SHARED_LIBS "Build shared libraries" ON "NOT LZ4_BUNDLED_MODE" OFF)
+ CMAKE_DEPENDENT_OPTION(BUILD_STATIC_LIBS "Build static libraries" OFF "BUILD_SHARED_LIBS" ON)
++OPTION(BUILD_BENCHMARKS ON)
+ 
+ if(NOT BUILD_SHARED_LIBS AND NOT BUILD_STATIC_LIBS)
+   message(FATAL_ERROR "Both BUILD_SHARED_LIBS and BUILD_STATIC_LIBS have been disabled")
+@@ -109,6 +110,7 @@ endif(NOT BUILD_SHARED_LIBS AND NOT BUIL
+ #-----------------------------------------------------------------------------
+ set(LZ4_LIB_SOURCE_DIR "${LZ4_TOP_SOURCE_DIR}/lib")
+ set(LZ4_PROG_SOURCE_DIR "${LZ4_TOP_SOURCE_DIR}/programs")
++set(LZ4_TESTS_SOURCE_DIR "${LZ4_TOP_SOURCE_DIR}/tests")
+ 
+ include_directories("${LZ4_LIB_SOURCE_DIR}")
+ 
+@@ -264,6 +266,21 @@ if(LZ4_BUILD_CLI)
+   set_target_properties(lz4cli PROPERTIES OUTPUT_NAME lz4)
+ endif(LZ4_BUILD_CLI)
+ 
++if(BUILD_BENCHMARKS)
++  include_directories("${LZ4_PROG_SOURCE_DIR}")
++  add_executable(fullbench ${LZ4_TESTS_SOURCE_DIR}/bench/fullbench.c)
++  target_link_libraries(fullbench lz4)
++  # xxhash namespace
++  if(BUILD_SHARED_LIBS)
++    target_compile_definitions(fullbench PRIVATE
++      XXH_NAMESPACE=LZ4_)
++  endif()
++  if(BUILD_STATIC_LIBS)
++    target_compile_definitions(fullbench PRIVATE
++      XXH_NAMESPACE=LZ4_)
++  endif()
++endif()
++
+ # lz4c
+ if(LZ4_BUILD_LEGACY_LZ4C)
+   list(APPEND LZ4_PROGRAMS_BUILT lz4c)
