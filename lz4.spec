@@ -66,6 +66,12 @@ liblz4 library.
 Summary:	LZ4 compression library (32-bit)
 Group:		System/Libraries
 BuildRequires:	libc6
+# clang 23 -m32 links compiler-rt, not libgcc.a. The i386 builtins live
+# in the cross-i686 clang package, with the matching sysroot.
+BuildRequires:	cross-i686-openmandriva-linux-gnu-clang
+BuildRequires:	cross-i686-openmandriva-linux-gnu-libc
+BuildRequires:	cross-i686-openmandriva-linux-gnu-binutils
+BuildRequires:	cross-i686-openmandriva-linux-gnu-gcc
 
 %description -n %{lib32name}
 LZ4 compression library (32-bit)
